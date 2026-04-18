@@ -43,18 +43,11 @@ st.markdown("---")
 
 uploaded_file = st.file_uploader("Upload your CSV", type=["csv"])
 
-# 🎨 Colors
-COLORS = [
-    "#4F46E5", "#22C55E", "#F59E0B",
-    "#EF4444", "#3B82F6", "#8B5CF6",
-    "#14B8A6"
-]
+COLORS = ["#4F46E5", "#22C55E", "#F59E0B", "#EF4444", "#3B82F6"]
 
-# 💬 Memory
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# 💡 Insights
 def generate_insights(df):
     insights = []
 
@@ -76,6 +69,7 @@ def generate_insights(df):
             insights.append(f"✅ {c}: {pct:.1f}% (controlled)")
 
     return insights
+
 
 # =========================
 # MAIN APP
@@ -146,8 +140,10 @@ if uploaded_file is not None:
         mime="text/csv"
     )
 
-    # 🤖 Chat
-    st.markdown("## 💬 Chat AI")
+    # =========================
+    # 💬 SMART DASHBOARD v2 CHAT
+    # =========================
+    st.markdown("## 💬 Chat AI (Smart Dashboard v2)")
 
     chain = build_rag_chain(df)
 
@@ -155,37 +151,49 @@ if uploaded_file is not None:
         with st.chat_message(m["role"]):
             st.markdown(m["content"])
 
-    # =========================
-    # ✅ ONLY FIXED PART (GRAPH ROUTING)
-    # =========================
     if prompt := st.chat_input("Ask something..."):
 
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        q = prompt.lower()
+        with st.chat_message("assistant"):
 
-        # 📊 GRAPH HANDLING FIX
-        if any(word in q for word in ["graph", "chart", "plot", "visual", "summary"]):
+            # 🧠 AI decides intent (NO keywords)
+            intent_prompt = f"""
+You are an intent classifier for a finance dashboard.
 
-            fig = px.bar(
-                summary,
-                x="category",
-                y="total",
-                color="category",
-                text_auto=True
-            )
+User query: {prompt}
 
-            with st.chat_message("assistant"):
-                st.markdown("📊 Here is your visualization:")
+Return ONLY one word:
+GRAPH or INSIGHT
+"""
+
+            intent = ask(chain, intent_prompt).strip().upper()
+
+            if "GRAPH" in intent:
+
+                fig = px.bar(
+                    summary,
+                    x="category",
+                    y="total",
+                    color="category",
+                    text_auto=True
+                )
+
+                st.markdown("📊 Smart AI Mode: GRAPH")
                 st.plotly_chart(fig, use_container_width=True)
 
-            response = "📊 Generated your chart successfully!"
+                response = "📊 Here is your smart financial visualization!"
 
-        else:
-            response = ask(chain, prompt)
+            else:
 
-            with st.chat_message("assistant"):
+                response = ask(chain, prompt)
+
+                st.markdown("🤖 Smart AI Mode: INSIGHT")
                 st.markdown(response)
 
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": response
+        })
+
         st.rerun()
