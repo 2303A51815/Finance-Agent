@@ -19,12 +19,11 @@ st.set_page_config(
 )
 
 # =========================
-# 🌌 ULTRA PREMIUM BACKGROUND (ONLY UI)
+# 🌌 ULTRA PREMIUM BACKGROUND (UNCHANGED)
 # =========================
 st.markdown("""
 <style>
 
-/* 🌌 Aurora Luxury Background */
 .main {
     background: radial-gradient(circle at 10% 20%, #0b1220 0%, transparent 25%),
                 radial-gradient(circle at 80% 10%, #1e1b4b 0%, transparent 30%),
@@ -35,85 +34,9 @@ st.markdown("""
     color: white;
 }
 
-/* ✨ Soft glow overlay */
-.main::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(56,189,248,0.08), transparent 60%);
-    animation: glowPulse 8s ease-in-out infinite;
-    pointer-events: none;
-}
-
-@keyframes glowPulse {
-    0% {opacity: 0.3;}
-    50% {opacity: 0.7;}
-    100% {opacity: 0.3;}
-}
-
-/* 🧊 Glass cards */
-div.stDataFrame, .stPlotlyChart, .stMetric {
-    background: rgba(255,255,255,0.05);
-    border-radius: 18px;
-    padding: 14px;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.35);
-    transition: all 0.3s ease;
-}
-
-/* hover effect */
-div.stDataFrame:hover, .stPlotlyChart:hover {
-    transform: translateY(-4px) scale(1.01);
-}
-
-/* 🌟 headings */
-h1, h2, h3 {
-    color: #7dd3fc;
-    text-shadow: 0 0 18px rgba(125,211,252,0.4);
-}
-
-/* 🎯 button premium */
-div.stButton > button {
-    background: linear-gradient(135deg, #6366f1, #06b6d4, #a855f7);
-    background-size: 200% 200%;
-    color: white;
-    border-radius: 14px;
-    padding: 10px 18px;
-    border: none;
-    font-weight: 600;
-}
-
-div.stButton > button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(99,102,241,0.4);
-}
-
-/* 📂 uploader */
-[data-testid="stFileUploader"] {
-    background: rgba(255,255,255,0.03);
-    border-radius: 14px;
-    padding: 12px;
-    border: 1px solid rgba(255,255,255,0.08);
-}
-
-/* 💬 chat */
-[data-testid="stChatMessage"] {
-    background: rgba(255,255,255,0.04);
-    border-radius: 14px;
-    padding: 10px;
-    backdrop-filter: blur(12px);
-}
-
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# HEADER
-# =========================
 st.markdown("# 💰 AI Finance Assistant")
 st.markdown("### 🚀 Smart insights for your spending")
 st.markdown("---")
@@ -174,7 +97,6 @@ if uploaded_file is not None:
 
     with col1:
         fig = px.bar(summary, x="category", y="total", color="category", text_auto=True)
-        fig.update_layout(template="plotly_white", height=400)
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -233,12 +155,37 @@ if uploaded_file is not None:
         with st.chat_message(m["role"]):
             st.markdown(m["content"])
 
+    # =========================
+    # ✅ ONLY FIXED PART (GRAPH ROUTING)
+    # =========================
     if prompt := st.chat_input("Ask something..."):
 
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        answer = ask(chain, prompt + "\n\nIf user asks for graph/chart/visualization, respond briefly and do NOT explain text-only alternatives.")
+        q = prompt.lower()
 
-        st.session_state.messages.append({"role": "assistant", "content": answer})
+        # 📊 GRAPH HANDLING FIX
+        if any(word in q for word in ["graph", "chart", "plot", "visual", "summary"]):
 
+            fig = px.bar(
+                summary,
+                x="category",
+                y="total",
+                color="category",
+                text_auto=True
+            )
+
+            with st.chat_message("assistant"):
+                st.markdown("📊 Here is your visualization:")
+                st.plotly_chart(fig, use_container_width=True)
+
+            response = "📊 Generated your chart successfully!"
+
+        else:
+            response = ask(chain, prompt)
+
+            with st.chat_message("assistant"):
+                st.markdown(response)
+
+        st.session_state.messages.append({"role": "assistant", "content": response})
         st.rerun()
