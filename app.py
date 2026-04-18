@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from src.parser import parse_statement
-from src.categorizer import categorizer_df, spending_by_category
-from src.rag_chain import build_rag_chain, ask
+from parser import parse_statement
+from categorizer import categorizer_df, spending_by_category
+from rag_chain import build_rag_chain, ask
 
 st.set_page_config(page_title="AI Finance Assistant", layout="wide")
 
