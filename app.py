@@ -11,121 +11,127 @@ from categorizer import categorizer_df, spending_by_category
 from rag_chain import build_rag_chain, ask
 
 # =========================
-# 🌈 PREMIUM ANIMATED UI
+# ⚡ PAGE CONFIG (UNCHANGED LOGIC)
 # =========================
 st.set_page_config(
-    page_title="💰 Finance AI Pro",
+    page_title="💰 AI Finance Assistant",
     layout="wide"
 )
 
+# =========================
+# 💎 ULTRA PREMIUM UI ONLY (NO LOGIC CHANGE)
+# =========================
 st.markdown("""
 <style>
 
-/* 🌌 Animated gradient background */
+/* 🌌 Animated luxury background */
 .main {
     background: linear-gradient(-45deg,
+        #020617,
         #0f172a,
         #1e1b4b,
-        #0f766e,
-        #1d4ed8,
-        #7c3aed,
-        #db2777
+        #312e81,
+        #0ea5e9,
+        #a855f7,
+        #ec4899
     );
     background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    animation: bgMove 14s ease infinite;
     color: white;
 }
 
 /* Background animation */
-@keyframes gradientBG {
+@keyframes bgMove {
     0% {background-position: 0% 50%;}
     50% {background-position: 100% 50%;}
     100% {background-position: 0% 50%;}
 }
 
-/* ✨ Fade in animation */
+/* ✨ Smooth fade */
 @keyframes fadeIn {
     from {opacity: 0; transform: translateY(10px);}
     to {opacity: 1; transform: translateY(0);}
 }
 
-/* 🧊 Floating animation */
-@keyframes floatUp {
-    0% {transform: translateY(0px);}
-    50% {transform: translateY(-6px);}
-    100% {transform: translateY(0px);}
-}
-
-/* 📦 Glass cards */
+/* 🧊 Glass effect cards */
 div.stDataFrame, .stPlotlyChart, .stMetric {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.06);
     border-radius: 16px;
     padding: 12px;
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.15);
-    animation: floatUp 6s ease-in-out infinite;
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-/* Hover effect */
+/* Hover lift */
 div.stDataFrame:hover, .stPlotlyChart:hover {
     transform: scale(1.01);
+    transition: 0.3s ease;
 }
 
 /* 🌟 Headings glow */
 h1, h2, h3 {
-    color: #00e5ff;
-    text-shadow: 0px 0px 15px rgba(0,229,255,0.6);
-    animation: fadeIn 1s ease-in;
+    color: #38bdf8;
+    text-shadow: 0 0 15px rgba(56,189,248,0.6);
+    animation: fadeIn 0.8s ease;
 }
 
-/* 🎯 Buttons */
+/* 🎯 Button glow */
 div.stButton > button {
-    background: linear-gradient(90deg, #ff4ecd, #6a5cff, #00e5ff);
+    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #06b6d4);
+    background-size: 300% 300%;
     color: white;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 10px 18px;
     border: none;
     font-weight: bold;
-    transition: all 0.3s ease;
 }
 
 div.stButton > button:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 0px 15px rgba(0,229,255,0.6);
+    transform: scale(1.06);
+    box-shadow: 0 0 20px rgba(168,85,247,0.6);
 }
 
-/* 📁 uploader */
+/* 📂 uploader styling */
 [data-testid="stFileUploader"] {
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 💬 chat bubble feel */
+[data-testid="stChatMessage"] {
     background: rgba(255,255,255,0.05);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 10px;
-    animation: fadeIn 1.2s ease;
+    backdrop-filter: blur(10px);
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# HEADER
+# UI HEADER (ONLY VISUAL)
 # =========================
 st.markdown("# 💰 AI Finance Assistant")
-st.markdown("### 🚀 Smart insights for your personal spending")
+st.markdown("### 🚀 Smart insights for your spending")
 st.markdown("---")
 
 uploaded_file = st.file_uploader("Upload your CSV", type=["csv"])
 
-# 🎨 Color palette
+# 🎨 Color palette (UNCHANGED)
 COLORS = [
     "#4F46E5", "#22C55E", "#F59E0B",
     "#EF4444", "#3B82F6", "#8B5CF6",
     "#14B8A6"
 ]
 
-# 💬 Chat memory
+# 💬 Chat memory (UNCHANGED)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# 💡 Insight function
+# 💡 Insight function (UNCHANGED)
 def generate_insights(df):
     insights = []
 
@@ -151,22 +157,19 @@ def generate_insights(df):
 
 
 # =========================
-# MAIN APP
+# MAIN APP (UNCHANGED)
 # =========================
 if uploaded_file is not None:
 
     df = parse_statement(uploaded_file)
     df = categorizer_df(df)
 
-    st.markdown("## 📊 Transaction Overview")
+    st.subheader("📊 Data Preview")
     st.dataframe(df, use_container_width=True)
 
     summary = spending_by_category(df)
 
-    # =========================
-    # VISUALS
-    # =========================
-    st.markdown("## 📊 Spending Analytics Dashboard")
+    st.markdown("## 📊 Visual Insights")
 
     col1, col2 = st.columns(2)
 
@@ -208,7 +211,7 @@ if uploaded_file is not None:
     # =========================
     # INSIGHTS
     # =========================
-    st.markdown("## 💡 Smart Insights")
+    st.markdown("## 💡 AI Insights")
 
     insights = generate_insights(df)
     for ins in insights:
@@ -217,7 +220,7 @@ if uploaded_file is not None:
     # =========================
     # BUDGET
     # =========================
-    st.markdown("## 🚨 Budget Control")
+    st.markdown("## 🚨 Budget Tracker")
 
     budget = st.number_input("Set your budget (₹)", min_value=0)
 
@@ -226,7 +229,7 @@ if uploaded_file is not None:
         remaining = budget - total_spend
 
         if remaining < 0:
-            st.error(f"⚠️ Over budget by ₹{abs(remaining):.0f}")
+            st.error(f"⚠️ You exceeded your budget by ₹{abs(remaining):.0f}")
         else:
             st.success(f"✅ Remaining ₹{remaining:.0f}")
 
@@ -247,7 +250,7 @@ if uploaded_file is not None:
     # =========================
     # AI CHAT
     # =========================
-    st.markdown("## 💬 AI Assistant")
+    st.markdown("## 💬 Chat with AI")
 
     chain = build_rag_chain(df)
 
