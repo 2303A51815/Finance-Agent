@@ -12,6 +12,7 @@ load_dotenv()
 
 def build_rag_chain(df):
     docs = []
+
     for _, row in df.iterrows():
         text = (
             f"On {row['date']}, "
@@ -26,6 +27,7 @@ def build_rag_chain(df):
 
     llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
 
+    # ✅ FIXED PROMPT (THIS WAS THE BUG)
     prompt = ChatPromptTemplate.from_template("""
 You are a smart and friendly AI finance assistant 💰.
 
@@ -35,11 +37,13 @@ Rules:
 - Add relevant emojis
 - Give small insights if possible
 - DO NOT return JSON
-- IMPORTANT: If the app shows charts/graphs, do NOT say you cannot display images. Assume visuals are already shown in the UI.""")
-Transactions:
+- IMPORTANT: If the app shows charts/graphs, do NOT say you cannot display images. Assume visuals are already shown in the UI.
+
+Context:
 {context}
 
-Question: {question}
+Question:
+{question}
 """)
 
     chain = (
