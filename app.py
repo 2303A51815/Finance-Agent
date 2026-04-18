@@ -11,7 +11,7 @@ from categorizer import categorizer_df, spending_by_category
 from rag_chain import build_rag_chain, ask
 
 # =========================
-# ⚡ PAGE CONFIG (UNCHANGED LOGIC)
+# ⚡ PAGE CONFIG
 # =========================
 st.set_page_config(
     page_title="💰 AI Finance Assistant",
@@ -19,100 +19,100 @@ st.set_page_config(
 )
 
 # =========================
-# 💎 ULTRA PREMIUM UI ONLY (NO LOGIC CHANGE)
+# 🌌 ULTRA PREMIUM BACKGROUND (ONLY UI)
 # =========================
 st.markdown("""
 <style>
 
-/* 🌌 Animated luxury background */
+/* 🌌 Aurora Luxury Background */
 .main {
-    background: linear-gradient(-45deg,
-        #020617,
-        #0f172a,
-        #1e1b4b,
-        #312e81,
-        #0ea5e9,
-        #a855f7,
-        #ec4899
-    );
-    background-size: 400% 400%;
-    animation: bgMove 14s ease infinite;
+    background: radial-gradient(circle at 10% 20%, #0b1220 0%, transparent 25%),
+                radial-gradient(circle at 80% 10%, #1e1b4b 0%, transparent 30%),
+                radial-gradient(circle at 50% 90%, #0ea5e9 0%, transparent 35%),
+                radial-gradient(circle at 90% 80%, #a855f7 0%, transparent 40%),
+                linear-gradient(135deg, #020617 0%, #0f172a 40%, #0b1220 100%);
+    background-attachment: fixed;
     color: white;
 }
 
-/* Background animation */
-@keyframes bgMove {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
+/* ✨ Soft glow overlay */
+.main::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(56,189,248,0.08), transparent 60%);
+    animation: glowPulse 8s ease-in-out infinite;
+    pointer-events: none;
 }
 
-/* ✨ Smooth fade */
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(10px);}
-    to {opacity: 1; transform: translateY(0);}
+@keyframes glowPulse {
+    0% {opacity: 0.3;}
+    50% {opacity: 0.7;}
+    100% {opacity: 0.3;}
 }
 
-/* 🧊 Glass effect cards */
+/* 🧊 Glass cards */
 div.stDataFrame, .stPlotlyChart, .stMetric {
-    background: rgba(255,255,255,0.06);
-    border-radius: 16px;
-    padding: 12px;
-    backdrop-filter: blur(18px);
+    background: rgba(255,255,255,0.05);
+    border-radius: 18px;
+    padding: 14px;
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+    transition: all 0.3s ease;
 }
 
-/* Hover lift */
+/* hover effect */
 div.stDataFrame:hover, .stPlotlyChart:hover {
-    transform: scale(1.01);
-    transition: 0.3s ease;
+    transform: translateY(-4px) scale(1.01);
 }
 
-/* 🌟 Headings glow */
+/* 🌟 headings */
 h1, h2, h3 {
-    color: #38bdf8;
-    text-shadow: 0 0 15px rgba(56,189,248,0.6);
-    animation: fadeIn 0.8s ease;
+    color: #7dd3fc;
+    text-shadow: 0 0 18px rgba(125,211,252,0.4);
 }
 
-/* 🎯 Button glow */
+/* 🎯 button premium */
 div.stButton > button {
-    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #06b6d4);
-    background-size: 300% 300%;
+    background: linear-gradient(135deg, #6366f1, #06b6d4, #a855f7);
+    background-size: 200% 200%;
     color: white;
     border-radius: 14px;
     padding: 10px 18px;
     border: none;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 div.stButton > button:hover {
-    transform: scale(1.06);
-    box-shadow: 0 0 20px rgba(168,85,247,0.6);
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(99,102,241,0.4);
 }
 
-/* 📂 uploader styling */
+/* 📂 uploader */
 [data-testid="stFileUploader"] {
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.03);
     border-radius: 14px;
     padding: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.08);
 }
 
-/* 💬 chat bubble feel */
+/* 💬 chat */
 [data-testid="stChatMessage"] {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.04);
     border-radius: 14px;
     padding: 10px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# UI HEADER (ONLY VISUAL)
+# HEADER
 # =========================
 st.markdown("# 💰 AI Finance Assistant")
 st.markdown("### 🚀 Smart insights for your spending")
@@ -120,44 +120,42 @@ st.markdown("---")
 
 uploaded_file = st.file_uploader("Upload your CSV", type=["csv"])
 
-# 🎨 Color palette (UNCHANGED)
+# 🎨 Colors
 COLORS = [
     "#4F46E5", "#22C55E", "#F59E0B",
     "#EF4444", "#3B82F6", "#8B5CF6",
     "#14B8A6"
 ]
 
-# 💬 Chat memory (UNCHANGED)
+# 💬 Memory
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# 💡 Insight function (UNCHANGED)
+# 💡 Insights
 def generate_insights(df):
     insights = []
 
-    total_spend = df["amount"].sum()
-    category_sum = df.groupby("category")["amount"].sum().sort_values(ascending=False)
+    total = df["amount"].sum()
+    cat = df.groupby("category")["amount"].sum().sort_values(ascending=False)
 
-    top_category = category_sum.idxmax()
-    top_value = category_sum.max()
+    top = cat.idxmax()
+    val = cat.max()
 
-    insights.append(f"💸 You spent the most on **{top_category}** (₹{top_value})")
+    insights.append(f"💸 Top spending: **{top} → ₹{val:.0f}**")
 
-    for cat, val in category_sum.items():
-        percent = (val / total_spend) * 100
-
-        if percent > 50:
-            insights.append(f"⚠️ {cat.capitalize()} takes **{percent:.1f}%** — very high!")
-        elif percent > 25:
-            insights.append(f"📊 {cat.capitalize()} takes **{percent:.1f}%** — moderate")
+    for c, v in cat.items():
+        pct = (v / total) * 100
+        if pct > 50:
+            insights.append(f"🔥 {c}: {pct:.1f}% (very high)")
+        elif pct > 25:
+            insights.append(f"⚠️ {c}: {pct:.1f}% (moderate)")
         else:
-            insights.append(f"✅ {cat.capitalize()} is under control ({percent:.1f}%)")
+            insights.append(f"✅ {c}: {pct:.1f}% (controlled)")
 
     return insights
 
-
 # =========================
-# MAIN APP (UNCHANGED)
+# MAIN APP
 # =========================
 if uploaded_file is not None:
 
@@ -169,35 +167,21 @@ if uploaded_file is not None:
 
     summary = spending_by_category(df)
 
-    st.markdown("## 📊 Visual Insights")
+    # 📊 Charts
+    st.markdown("## 📊 Analytics")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        fig_bar = px.bar(
-            summary,
-            x="category",
-            y="total",
-            color="category",
-            text_auto=True,
-            color_discrete_sequence=COLORS,
-        )
-        fig_bar.update_layout(template="plotly_white", height=400)
-        st.plotly_chart(fig_bar, use_container_width=True)
+        fig = px.bar(summary, x="category", y="total", color="category", text_auto=True)
+        fig.update_layout(template="plotly_white", height=400)
+        st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        fig_pie = px.pie(
-            summary,
-            names="category",
-            values="total",
-            hole=0.5,
-            color_discrete_sequence=COLORS,
-        )
-        st.plotly_chart(fig_pie, use_container_width=True)
+        fig2 = px.pie(summary, names="category", values="total", hole=0.5)
+        st.plotly_chart(fig2, use_container_width=True)
 
-    # =========================
-    # MONTHLY TREND
-    # =========================
+    # 📈 Monthly trend
     st.markdown("## 📈 Monthly Trend")
 
     df["date"] = pd.to_datetime(df["date"])
@@ -205,71 +189,56 @@ if uploaded_file is not None:
 
     monthly = df.groupby("month")["amount"].sum().reset_index()
 
-    fig_line = px.line(monthly, x="month", y="amount", markers=True)
-    st.plotly_chart(fig_line, use_container_width=True)
+    fig3 = px.line(monthly, x="month", y="amount", markers=True)
+    st.plotly_chart(fig3, use_container_width=True)
 
-    # =========================
-    # INSIGHTS
-    # =========================
+    # 💡 Insights
     st.markdown("## 💡 AI Insights")
 
-    insights = generate_insights(df)
-    for ins in insights:
-        st.markdown(f"- {ins}")
+    for i in generate_insights(df):
+        st.markdown(f"- {i}")
 
-    # =========================
-    # BUDGET
-    # =========================
-    st.markdown("## 🚨 Budget Tracker")
+    # 🚨 Budget
+    st.markdown("## 🚨 Budget")
 
-    budget = st.number_input("Set your budget (₹)", min_value=0)
+    budget = st.number_input("Set budget (₹)", min_value=0)
 
     if budget > 0:
-        total_spend = df["amount"].sum()
-        remaining = budget - total_spend
+        total = df["amount"].sum()
+        rem = budget - total
 
-        if remaining < 0:
-            st.error(f"⚠️ You exceeded your budget by ₹{abs(remaining):.0f}")
+        if rem < 0:
+            st.error(f"⚠️ Over by ₹{abs(rem):.0f}")
         else:
-            st.success(f"✅ Remaining ₹{remaining:.0f}")
+            st.success(f"₹{rem:.0f} remaining")
 
-    # =========================
-    # DOWNLOAD
-    # =========================
-    st.markdown("## 📄 Download Report")
+    # 📄 Download
+    st.markdown("## 📄 Download")
 
     csv = df.to_csv(index=False).encode("utf-8")
 
     st.download_button(
-        "⬇️ Download Data",
+        "Download CSV",
         csv,
-        file_name="finance_report.csv",
+        file_name="report.csv",
         mime="text/csv"
     )
 
-    # =========================
-    # AI CHAT
-    # =========================
-    st.markdown("## 💬 Chat with AI")
+    # 🤖 Chat
+    st.markdown("## 💬 Chat AI")
 
     chain = build_rag_chain(df)
 
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+    for m in st.session_state.messages:
+        with st.chat_message(m["role"]):
+            st.markdown(m["content"])
 
-    if prompt := st.chat_input("Ask about your spending..."):
+    if prompt := st.chat_input("Ask something..."):
 
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
         answer = ask(chain, prompt)
 
-        with st.chat_message("assistant"):
-            st.markdown(f"💡 {answer}")
+        st.session_state.messages.append({"role": "assistant", "content": answer})
 
-        st.session_state.messages.append(
-            {"role": "assistant", "content": answer}
-        )
+        st.rerun()
