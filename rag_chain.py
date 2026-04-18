@@ -35,7 +35,8 @@ Rules:
 - Add relevant emojis
 - Give small insights if possible
 - DO NOT return JSON
-
+- IMPORTANT: If the app shows charts/graphs, do NOT say you cannot display images. Assume visuals are already shown in the UI.
+""")
 Transactions:
 {context}
 
