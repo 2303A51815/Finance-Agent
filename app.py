@@ -11,7 +11,7 @@ from categorizer import categorizer_df, spending_by_category
 from rag_chain import build_rag_chain, ask
 
 # =========================
-# 🌈 PREMIUM UI CONFIG
+# 🌈 PREMIUM ANIMATED UI
 # =========================
 st.set_page_config(
     page_title="💰 Finance AI Pro",
@@ -21,34 +21,61 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* 🌈 Animated Gradient Background */
+/* 🌌 Animated gradient background */
 .main {
-    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #0f766e, #1e3a8a, #7c3aed);
+    background: linear-gradient(-45deg,
+        #0f172a,
+        #1e1b4b,
+        #0f766e,
+        #1d4ed8,
+        #7c3aed,
+        #db2777
+    );
     background-size: 400% 400%;
-    animation: gradientBG 12s ease infinite;
+    animation: gradientBG 15s ease infinite;
     color: white;
 }
 
-/* Animation */
+/* Background animation */
 @keyframes gradientBG {
     0% {background-position: 0% 50%;}
     50% {background-position: 100% 50%;}
     100% {background-position: 0% 50%;}
 }
 
-/* 🧊 Glass Effect Cards */
+/* ✨ Fade in animation */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* 🧊 Floating animation */
+@keyframes floatUp {
+    0% {transform: translateY(0px);}
+    50% {transform: translateY(-6px);}
+    100% {transform: translateY(0px);}
+}
+
+/* 📦 Glass cards */
 div.stDataFrame, .stPlotlyChart, .stMetric {
     background: rgba(255,255,255,0.08);
     border-radius: 16px;
     padding: 12px;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
     border: 1px solid rgba(255,255,255,0.15);
+    animation: floatUp 6s ease-in-out infinite;
 }
 
-/* ✨ Headings Glow */
+/* Hover effect */
+div.stDataFrame:hover, .stPlotlyChart:hover {
+    transform: scale(1.01);
+}
+
+/* 🌟 Headings glow */
 h1, h2, h3 {
     color: #00e5ff;
-    text-shadow: 0px 0px 12px rgba(0,229,255,0.6);
+    text-shadow: 0px 0px 15px rgba(0,229,255,0.6);
+    animation: fadeIn 1s ease-in;
 }
 
 /* 🎯 Buttons */
@@ -56,52 +83,35 @@ div.stButton > button {
     background: linear-gradient(90deg, #ff4ecd, #6a5cff, #00e5ff);
     color: white;
     border-radius: 12px;
-    padding: 8px 18px;
+    padding: 10px 18px;
     border: none;
     font-weight: bold;
+    transition: all 0.3s ease;
 }
 
-/* 📊 Metrics */
-[data-testid="stMetric"] {
-    background: rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 10px;
+div.stButton > button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 15px rgba(0,229,255,0.6);
 }
 
-/* 📦 File uploader */
+/* 📁 uploader */
 [data-testid="stFileUploader"] {
     background: rgba(255,255,255,0.05);
     border-radius: 12px;
     padding: 10px;
+    animation: fadeIn 1.2s ease;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# HEADER (PREMIUM)
+# HEADER
 # =========================
-st.markdown("# 💰 Finance AI Pro")
-st.markdown("### 🚀 Smart insights for your money with AI")
+st.markdown("# 💰 AI Finance Assistant")
+st.markdown("### 🚀 Smart insights for your personal spending")
 st.markdown("---")
 
-st.markdown("""
-<div style="
-    padding:18px;
-    border-radius:16px;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
-    text-align:center;
-    font-size:16px;
-    margin-bottom:20px;
-">
-🔥 Track expenses • 📊 Visual analytics • 🤖 AI financial assistant
-</div>
-""", unsafe_allow_html=True)
-
-# =========================
-# FILE UPLOAD
-# =========================
 uploaded_file = st.file_uploader("Upload your CSV", type=["csv"])
 
 # 🎨 Color palette
@@ -154,7 +164,7 @@ if uploaded_file is not None:
     summary = spending_by_category(df)
 
     # =========================
-    # VISUAL DASHBOARD
+    # VISUALS
     # =========================
     st.markdown("## 📊 Spending Analytics Dashboard")
 
@@ -169,10 +179,7 @@ if uploaded_file is not None:
             text_auto=True,
             color_discrete_sequence=COLORS,
         )
-        fig_bar.update_layout(
-            template="plotly_white",
-            height=400
-        )
+        fig_bar.update_layout(template="plotly_white", height=400)
         st.plotly_chart(fig_bar, use_container_width=True)
 
     with col2:
