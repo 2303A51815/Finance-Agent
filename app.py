@@ -11,45 +11,97 @@ from categorizer import categorizer_df, spending_by_category
 from rag_chain import build_rag_chain, ask
 
 # =========================
-# 🎨 PAGE CONFIG + UI THEME
+# 🌈 PREMIUM UI CONFIG
 # =========================
 st.set_page_config(
-    page_title="💰 AI Finance Dashboard",
+    page_title="💰 Finance AI Pro",
     layout="wide"
 )
 
 st.markdown("""
 <style>
-    .main {
-        background-color: #0f172a;
-        color: white;
-    }
 
-    h1, h2, h3 {
-        color: #60a5fa;
-    }
+/* 🌈 Animated Gradient Background */
+.main {
+    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #0f766e, #1e3a8a, #7c3aed);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+    color: white;
+}
 
-    .stMetric {
-        background-color: #1e293b;
-        padding: 15px;
-        border-radius: 12px;
-    }
+/* Animation */
+@keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
 
-    div.stButton > button {
-        background-color: #3b82f6;
-        color: white;
-        border-radius: 8px;
-    }
+/* 🧊 Glass Effect Cards */
+div.stDataFrame, .stPlotlyChart, .stMetric {
+    background: rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 12px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* ✨ Headings Glow */
+h1, h2, h3 {
+    color: #00e5ff;
+    text-shadow: 0px 0px 12px rgba(0,229,255,0.6);
+}
+
+/* 🎯 Buttons */
+div.stButton > button {
+    background: linear-gradient(90deg, #ff4ecd, #6a5cff, #00e5ff);
+    color: white;
+    border-radius: 12px;
+    padding: 8px 18px;
+    border: none;
+    font-weight: bold;
+}
+
+/* 📊 Metrics */
+[data-testid="stMetric"] {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+/* 📦 File uploader */
+[data-testid="stFileUploader"] {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 10px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# HEADER
+# HEADER (PREMIUM)
 # =========================
-st.markdown("# 💰 AI Finance Dashboard")
-st.markdown("### Smart insights for your personal spending 📊")
+st.markdown("# 💰 Finance AI Pro")
+st.markdown("### 🚀 Smart insights for your money with AI")
 st.markdown("---")
 
+st.markdown("""
+<div style="
+    padding:18px;
+    border-radius:16px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    text-align:center;
+    font-size:16px;
+    margin-bottom:20px;
+">
+🔥 Track expenses • 📊 Visual analytics • 🤖 AI financial assistant
+</div>
+""", unsafe_allow_html=True)
+
+# =========================
+# FILE UPLOAD
+# =========================
 uploaded_file = st.file_uploader("Upload your CSV", type=["csv"])
 
 # 🎨 Color palette
@@ -96,23 +148,18 @@ if uploaded_file is not None:
     df = parse_statement(uploaded_file)
     df = categorizer_df(df)
 
-    # -------------------------
-    # DATA PREVIEW
-    # -------------------------
     st.markdown("## 📊 Transaction Overview")
     st.dataframe(df, use_container_width=True)
 
     summary = spending_by_category(df)
 
-    # -------------------------
+    # =========================
     # VISUAL DASHBOARD
-    # -------------------------
+    # =========================
     st.markdown("## 📊 Spending Analytics Dashboard")
-    st.caption("Interactive breakdown of your financial behavior")
 
     col1, col2 = st.columns(2)
 
-    # BAR CHART
     with col1:
         fig_bar = px.bar(
             summary,
@@ -123,14 +170,11 @@ if uploaded_file is not None:
             color_discrete_sequence=COLORS,
         )
         fig_bar.update_layout(
-            title="Category Spending",
             template="plotly_white",
-            showlegend=False,
             height=400
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
-    # PIE CHART
     with col2:
         fig_pie = px.pie(
             summary,
@@ -138,11 +182,6 @@ if uploaded_file is not None:
             values="total",
             hole=0.5,
             color_discrete_sequence=COLORS,
-        )
-        fig_pie.update_layout(
-            title="Spending Distribution",
-            template="plotly_white",
-            height=400
         )
         st.plotly_chart(fig_pie, use_container_width=True)
 
@@ -162,8 +201,7 @@ if uploaded_file is not None:
     # =========================
     # INSIGHTS
     # =========================
-    st.markdown("## 💡 Smart Financial Insights")
-    st.caption("AI-generated spending analysis")
+    st.markdown("## 💡 Smart Insights")
 
     insights = generate_insights(df)
     for ins in insights:
@@ -172,8 +210,7 @@ if uploaded_file is not None:
     # =========================
     # BUDGET
     # =========================
-    st.markdown("## 🚨 Budget Control Center")
-    st.caption("Track your spending discipline")
+    st.markdown("## 🚨 Budget Control")
 
     budget = st.number_input("Set your budget (₹)", min_value=0)
 
@@ -189,12 +226,12 @@ if uploaded_file is not None:
     # =========================
     # DOWNLOAD
     # =========================
-    st.markdown("## 📄 Export Financial Report")
+    st.markdown("## 📄 Download Report")
 
     csv = df.to_csv(index=False).encode("utf-8")
 
     st.download_button(
-        "⬇️ Download Report",
+        "⬇️ Download Data",
         csv,
         file_name="finance_report.csv",
         mime="text/csv"
@@ -203,8 +240,7 @@ if uploaded_file is not None:
     # =========================
     # AI CHAT
     # =========================
-    st.markdown("## 💬 AI Financial Assistant")
-    st.caption("Ask anything about your spending habits")
+    st.markdown("## 💬 AI Assistant")
 
     chain = build_rag_chain(df)
 
@@ -219,37 +255,11 @@ if uploaded_file is not None:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        q = prompt.lower()
+        answer = ask(chain, prompt)
 
-        if "graph" in q or "chart" in q:
+        with st.chat_message("assistant"):
+            st.markdown(f"💡 {answer}")
 
-            plot_df = summary
-            x = "category"
-            y = "total"
-            title = "Category Spending"
-
-            for cat in df["category"].unique():
-                if cat in q:
-                    filtered = df[df["category"] == cat]
-                    plot_df = filtered
-                    x = "description"
-                    y = "amount"
-                    title = f"{cat.capitalize()} Expenses"
-                    break
-
-            fig = px.bar(plot_df, x=x, y=y, color=y, text_auto=True)
-
-            fig.update_layout(title=title, template="plotly_white", height=400)
-
-            with st.chat_message("assistant"):
-                st.plotly_chart(fig, use_container_width=True)
-
-        else:
-            answer = ask(chain, prompt)
-
-            with st.chat_message("assistant"):
-                st.markdown(f"💡 {answer}")
-
-            st.session_state.messages.append(
-                {"role": "assistant", "content": answer}
-            )
+        st.session_state.messages.append(
+            {"role": "assistant", "content": answer}
+        )
