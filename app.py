@@ -237,7 +237,7 @@ if uploaded_file is not None:
 
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        answer = ask(chain, prompt)
+        answer = ask(chain, prompt + "\n\nIf user asks for graph/chart/visualization, respond briefly and do NOT explain text-only alternatives.")
 
         st.session_state.messages.append({"role": "assistant", "content": answer})
 
