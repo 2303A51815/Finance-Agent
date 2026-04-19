@@ -164,34 +164,14 @@ if uploaded_file is not None:
             intent_raw = ask(chain, intent_prompt).strip().lower()
     
             # 📊 GRAPH BLOCK
-            if "graph" in intent_raw:
-    
-                fig = px.bar(
-                    summary,
-                    x="category",
-                    y="total",
-                    color="category",
-                    text_auto=True
-                )
-    
-                st.markdown("📊 Here is your expense visualization:")
-    
-                st.plotly_chart(
-                    fig,
-                    use_container_width=True,
-                    key=f"chat_{len(st.session_state.messages)}"
-                )
-    
-                response = "📊 Graph displayed successfully"
-    
-            # 🤖 TEXT BLOCK
+            if "graph" in prompt.lower():
+
+                # YOU decide graph here (not AI)
+                fig = px.bar(summary, x="category", y="total", color="category")
+            
+                st.plotly_chart(fig, use_container_width=True)
+            
             else:
-    
                 response = ask(chain, prompt)
-    
                 st.markdown(response)
-    
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": response
-        })
+                    })
