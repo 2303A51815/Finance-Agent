@@ -19,7 +19,7 @@ st.set_page_config(
 )
 
 # =========================
-# 🌌 ULTRA PREMIUM BACKGROUND (UNCHANGED)
+# 🌌 BACKGROUND (UNCHANGED)
 # =========================
 st.markdown("""
 <style>
@@ -38,8 +38,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("# 💰 AI Finance Assistant")
-st.markdown("### 🚀 Smart insights for your spending")
-st.markdown("---")
 
 uploaded_file = st.file_uploader("Upload your CSV", type=["csv"])
 
@@ -70,7 +68,6 @@ def generate_insights(df):
 
     return insights
 
-
 # =========================
 # MAIN APP
 # =========================
@@ -84,20 +81,20 @@ if uploaded_file is not None:
 
     summary = spending_by_category(df)
 
-    # 📊 Charts
+    # 📊 CHARTS
     st.markdown("## 📊 Analytics")
 
     col1, col2 = st.columns(2)
 
     with col1:
         fig = px.bar(summary, x="category", y="total", color="category", text_auto=True)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="bar_chart")
 
     with col2:
         fig2 = px.pie(summary, names="category", values="total", hole=0.5)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True, key="pie_chart")
 
-    # 📈 Monthly trend
+    # 📈 MONTHLY
     st.markdown("## 📈 Monthly Trend")
 
     df["date"] = pd.to_datetime(df["date"])
@@ -106,15 +103,15 @@ if uploaded_file is not None:
     monthly = df.groupby("month")["amount"].sum().reset_index()
 
     fig3 = px.line(monthly, x="month", y="amount", markers=True)
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, use_container_width=True, key="line_chart")
 
-    # 💡 Insights
+    # 💡 INSIGHTS
     st.markdown("## 💡 AI Insights")
 
     for i in generate_insights(df):
         st.markdown(f"- {i}")
 
-    # 🚨 Budget
+    # 🚨 BUDGET
     st.markdown("## 🚨 Budget")
 
     budget = st.number_input("Set budget (₹)", min_value=0)
@@ -128,7 +125,7 @@ if uploaded_file is not None:
         else:
             st.success(f"₹{rem:.0f} remaining")
 
-    # 📄 Download
+    # 📄 DOWNLOAD
     st.markdown("## 📄 Download")
 
     csv = df.to_csv(index=False).encode("utf-8")
@@ -141,9 +138,9 @@ if uploaded_file is not None:
     )
 
     # =========================
-    # 💬 SMART DASHBOARD v2 CHAT
+    # 💬 CHAT (UNCHANGED LOGIC)
     # =========================
-    st.markdown("## 💬 Chat AI (Smart Dashboard v2)")
+    st.markdown("## 💬 Chat AI")
 
     chain = build_rag_chain(df)
 
@@ -155,40 +152,29 @@ if uploaded_file is not None:
 
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        with st.chat_message("assistant"):
+        q = prompt.lower()
 
-            # 🧠 AI decides intent (NO keywords)
-            intent_prompt = f"""
-You are an intent classifier for a finance dashboard.
+        # 📊 GRAPH MODE
+        if any(word in q for word in ["graph", "chart", "plot", "visual", "summary"]):
 
-User query: {prompt}
+            fig = px.bar(
+                summary,
+                x="category",
+                y="total",
+                color="category",
+                text_auto=True
+            )
 
-Return ONLY one word:
-GRAPH or INSIGHT
-"""
+            with st.chat_message("assistant"):
+                st.markdown("📊 Here is your visualization:")
+                st.plotly_chart(fig, use_container_width=True, key=f"chat_{len(st.session_state.messages)}")
 
-            intent = ask(chain, intent_prompt).strip().upper()
+            response = "📊 Generated your chart successfully!"
 
-            if "GRAPH" in intent:
+        else:
+            response = ask(chain, prompt)
 
-                fig = px.bar(
-                    summary,
-                    x="category",
-                    y="total",
-                    color="category",
-                    text_auto=True
-                )
-
-                st.markdown("📊 Smart AI Mode: GRAPH")
-                st.plotly_chart(fig, use_container_width=True)
-
-                response = "📊 Here is your smart financial visualization!"
-
-            else:
-
-                response = ask(chain, prompt)
-
-                st.markdown("🤖 Smart AI Mode: INSIGHT")
+            with st.chat_message("assistant"):
                 st.markdown(response)
 
         st.session_state.messages.append({
