@@ -142,7 +142,7 @@ if uploaded_file is not None:
     # =========================
     # 💬 CHAT (UNCHANGED LOGIC)
     # =========================
-    s# 🤖 CHAT (CLEAN VERSION - FIXED)
+    # 🤖 CHAT (CLEAN VERSION - FIXED)
 
 st.markdown("## 💬 Chat AI")
 
