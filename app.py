@@ -154,29 +154,37 @@ if uploaded_file is not None:
     
         with st.chat_message("assistant"):
     
-            # 🧠 Intent detection (safe)
             intent_prompt = f"""
-    Classify user query:
-    
+    Classify:
     {prompt}
     
-    Return only:
-    GRAPH or TEXT
+    Return: graph or text
     """
     
-            intent = ask(chain, intent_prompt).strip().upper()
+            intent_raw = ask(chain, intent_prompt).strip().lower()
     
-            # 📊 GRAPH MODE
-            if "GRAPH" in intent:
+            # 📊 GRAPH BLOCK
+            if "graph" in intent_raw:
     
-                fig = px.bar(summary, x="category", y="total", color="category", text_auto=True)
+                fig = px.bar(
+                    summary,
+                    x="category",
+                    y="total",
+                    color="category",
+                    text_auto=True
+                )
     
-                st.markdown("📊 Visualization Mode Activated")
-                st.plotly_chart(fig, use_container_width=True, key=f"chat_{len(st.session_state.messages)}")
+                st.markdown("📊 Here is your expense visualization:")
     
-                response = "📊 Generated visualization"
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True,
+                    key=f"chat_{len(st.session_state.messages)}"
+                )
     
-            # 🤖 TEXT MODE
+                response = "📊 Graph displayed successfully"
+    
+            # 🤖 TEXT BLOCK
             else:
     
                 response = ask(chain, prompt)
@@ -187,5 +195,3 @@ if uploaded_file is not None:
             "role": "assistant",
             "content": response
         })
-    
-        st.rerun()
