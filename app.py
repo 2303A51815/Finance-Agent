@@ -152,69 +152,40 @@ if uploaded_file is not None:
 
         st.session_state.messages.append({"role": "user", "content": prompt})
     
-        q = prompt.lower()
+        with st.chat_message("assistant"):
     
-        if any(word in q for word in ["graph", "chart", "plot", "visual", "summary"]):
-
-            charts = []
-        
-            # =========================
-            # 📊 1. CATEGORY BAR CHART
-            # =========================
-            fig_bar = px.bar(
-                summary,
-                x="category",
-                y="total",
-                color="category",
-                text_auto=True
-            )
-            charts.append(("📊 Category Spending (Bar)", fig_bar))
-        
-            # =========================
-            # 🍩 2. PIE CHART
-            # =========================
-            fig_pie = px.pie(
-                summary,
-                names="category",
-                values="total",
-                hole=0.5
-            )
-            charts.append(("🍩 Spending Distribution (Pie)", fig_pie))
-        
-            # =========================
-            # 📈 3. MONTHLY TREND
-            # =========================
-            fig_line = px.line(
-                monthly,
-                x="month",
-                y="amount",
-                markers=True
-            )
-            charts.append(("📈 Monthly Trend", fig_line))
-        
-            # =========================
-            # 📦 4. TOP EXPENSES
-            # =========================
-            top_df = summary.sort_values("total", ascending=False)
-        
-            fig_top = px.bar(
-                top_df,
-                x="category",
-                y="total",
-                color="category",
-                text_auto=True
-            )
-            charts.append(("📦 Top Expenses", fig_top))
-        
-            # =========================
-            # 📤 RENDER ALL CHARTS
-            # =========================
-            with st.chat_message("assistant"):
-        
-                st.markdown("📊 **Complete Financial Visualization Dashboard**")
-        
-                for title, fig in charts:
-                    st.markdown(f"### {title}")
-                    st.plotly_chart(fig, use_container_width=True, key=f"{title}_{len(st.session_state.messages)}")
-        
-            response = "📊 Generated full visualization dashboard"
+            # 🧠 Intent detection (safe)
+            intent_prompt = f"""
+    Classify user query:
+    
+    {prompt}
+    
+    Return only:
+    GRAPH or TEXT
+    """
+    
+            intent = ask(chain, intent_prompt).strip().upper()
+    
+            # 📊 GRAPH MODE
+            if "GRAPH" in intent:
+    
+                fig = px.bar(summary, x="category", y="total", color="category", text_auto=True)
+    
+                st.markdown("📊 Visualization Mode Activated")
+                st.plotly_chart(fig, use_container_width=True, key=f"chat_{len(st.session_state.messages)}")
+    
+                response = "📊 Generated visualization"
+    
+            # 🤖 TEXT MODE
+            else:
+    
+                response = ask(chain, prompt)
+    
+                st.markdown(response)
+    
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": response
+        })
+    
+        st.rerun()
