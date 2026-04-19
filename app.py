@@ -75,6 +75,8 @@ if uploaded_file is not None:
 
     df = parse_statement(uploaded_file)
     df = categorizer_df(df)
+    
+    chain = build_rag_chain(df)
 
     st.subheader("📊 Data Preview")
     st.dataframe(df, use_container_width=True)
@@ -144,7 +146,6 @@ if uploaded_file is not None:
 
 st.markdown("## 💬 Chat AI")
 
-chain = build_rag_chain(df)
 
 for m in st.session_state.messages:
     with st.chat_message(m["role"]):
