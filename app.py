@@ -150,35 +150,35 @@ if uploaded_file is not None:
 
     if prompt := st.chat_input("Ask something..."):
 
-    st.session_state.messages.append({"role": "user", "content": prompt})
-
-    q = prompt.lower()
-
-    if any(word in q for word in ["graph", "chart", "plot", "visual", "summary"]):
-
-        fig = px.bar(
-            summary,
-            x="category",
-            y="total",
-            color="category",
-            text_auto=True
-        )
-
-        with st.chat_message("assistant"):
-            st.markdown("📊 Here is your visualization:")
-            st.plotly_chart(fig, use_container_width=True)
-
-        response = "📊 Generated your chart successfully!"
-
-    else:
-        response = ask(chain, prompt)
-
-        with st.chat_message("assistant"):
-            st.markdown(response)
-
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": response
-    })
+        st.session_state.messages.append({"role": "user", "content": prompt})
+    
+        q = prompt.lower()
+    
+        if any(word in q for word in ["graph", "chart", "plot", "visual", "summary"]):
+    
+            fig = px.bar(
+                summary,
+                x="category",
+                y="total",
+                color="category",
+                text_auto=True
+            )
+    
+            with st.chat_message("assistant"):
+                st.markdown("📊 Here is your visualization:")
+                st.plotly_chart(fig, use_container_width=True)
+    
+            response = "📊 Generated your chart successfully!"
+    
+        else:
+            response = ask(chain, prompt)
+    
+            with st.chat_message("assistant"):
+                st.markdown(response)
+    
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": response
+        })
 
 
