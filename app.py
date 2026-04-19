@@ -140,38 +140,55 @@ if uploaded_file is not None:
     # =========================
     # 💬 CHAT (UNCHANGED LOGIC)
     # =========================
-    st.markdown("## 💬 Chat AI")
+    s# 🤖 CHAT (CLEAN VERSION - FIXED)
 
-    chain = build_rag_chain(df)
+st.markdown("## 💬 Chat AI")
 
-    for m in st.session_state.messages:
-        with st.chat_message(m["role"]):
-            st.markdown(m["content"])
+chain = build_rag_chain(df)
 
-    if prompt := st.chat_input("Ask something..."):
+for m in st.session_state.messages:
+    with st.chat_message(m["role"]):
+        st.markdown(m["content"])
 
-        st.session_state.messages.append({"role": "user", "content": prompt})
-    
-        with st.chat_message("assistant"):
-    
-            intent_prompt = f"""
-    Classify:
-    {prompt}
-    
-    Return: graph or text
-    """
-    
-            intent_raw = ask(chain, intent_prompt).strip().lower()
-    
-            # 📊 GRAPH BLOCK
-            if "graph" in prompt.lower():
+if prompt := st.chat_input("Ask something..."):
 
-                # YOU decide graph here (not AI)
-                fig = px.bar(summary, x="category", y="total", color="category")
-            
-                st.plotly_chart(fig, use_container_width=True)
-            
-            else:
-                response = ask(chain, prompt)
-                st.markdown(response)
-        
+    # store user message
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
+    with st.chat_message("assistant"):
+
+        q = prompt.lower()
+
+        # =========================
+        # 📊 GRAPH MODE (FIXED - NO AI DECISION)
+        # =========================
+        if "graph" in q or "chart" in q or "visual" in q:
+
+            # default safe graph (always works)
+            fig = px.bar(
+                summary,
+                x="category",
+                y="total",
+                color="category",
+                text_auto=True,
+                title="📊 Expense Overview"
+            )
+
+            st.markdown("📊 Here is your expense visualization:")
+            st.plotly_chart(fig, use_container_width=True)
+
+            response = "📊 Displayed your expense graph."
+
+        # =========================
+        # 💬 TEXT MODE (AI ONLY HERE)
+        # =========================
+        else:
+
+            response = ask(chain, prompt)
+            st.markdown(response)
+
+    # store assistant message
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": response
+    })
