@@ -155,30 +155,66 @@ if uploaded_file is not None:
         q = prompt.lower()
     
         if any(word in q for word in ["graph", "chart", "plot", "visual", "summary"]):
-    
-            fig = px.bar(
+
+            charts = []
+        
+            # =========================
+            # 📊 1. CATEGORY BAR CHART
+            # =========================
+            fig_bar = px.bar(
                 summary,
                 x="category",
                 y="total",
                 color="category",
                 text_auto=True
             )
-    
+            charts.append(("📊 Category Spending (Bar)", fig_bar))
+        
+            # =========================
+            # 🍩 2. PIE CHART
+            # =========================
+            fig_pie = px.pie(
+                summary,
+                names="category",
+                values="total",
+                hole=0.5
+            )
+            charts.append(("🍩 Spending Distribution (Pie)", fig_pie))
+        
+            # =========================
+            # 📈 3. MONTHLY TREND
+            # =========================
+            fig_line = px.line(
+                monthly,
+                x="month",
+                y="amount",
+                markers=True
+            )
+            charts.append(("📈 Monthly Trend", fig_line))
+        
+            # =========================
+            # 📦 4. TOP EXPENSES
+            # =========================
+            top_df = summary.sort_values("total", ascending=False)
+        
+            fig_top = px.bar(
+                top_df,
+                x="category",
+                y="total",
+                color="category",
+                text_auto=True
+            )
+            charts.append(("📦 Top Expenses", fig_top))
+        
+            # =========================
+            # 📤 RENDER ALL CHARTS
+            # =========================
             with st.chat_message("assistant"):
-                st.markdown("📊 Here is your visualization:")
-                st.plotly_chart(fig, use_container_width=True)
-    
-            response = "📊 Generated your chart successfully!"
-    
-        else:
-            response = ask(chain, prompt)
-    
-            with st.chat_message("assistant"):
-                st.markdown(response)
-    
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": response
-        })
-
-
+        
+                st.markdown("📊 **Complete Financial Visualization Dashboard**")
+        
+                for title, fig in charts:
+                    st.markdown(f"### {title}")
+                    st.plotly_chart(fig, use_container_width=True, key=f"{title}_{len(st.session_state.messages)}")
+        
+            response = "📊 Generated full visualization dashboard"
