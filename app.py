@@ -174,4 +174,4 @@ if uploaded_file is not None:
             else:
                 response = ask(chain, prompt)
                 st.markdown(response)
-        })
+        
